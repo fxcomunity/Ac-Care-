@@ -1,0 +1,4 @@
+# AC Care - Jangan upload file-file ini ke GitHub
+.env
+.venv/
+vendor/

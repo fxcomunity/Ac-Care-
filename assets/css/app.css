@@ -1,0 +1,159 @@
+:root {
+    --afe-blue: #2563eb;
+    --afe-blue-dark: #0f172a;
+    --afe-ink: #0f172a;
+    --afe-muted: #64748b;
+}
+
+.afe-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: .75rem;
+}
+
+.afe-logo-mark {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: .75rem;
+    color: #fff;
+    background: linear-gradient(135deg, #2563eb, #0ea5e9);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, .28);
+    font-weight: 800;
+    letter-spacing: -.04em;
+}
+
+.afe-logo-name {
+    color: inherit;
+    font-weight: 700;
+    letter-spacing: -.02em;
+}
+
+.afe-home-grid {
+    background-color: #020617;
+    background-image: linear-gradient(rgba(148, 163, 184, .08) 1px, transparent 1px), linear-gradient(90deg, rgba(148, 163, 184, .08) 1px, transparent 1px);
+    background-size: 42px 42px;
+}
+
+.afe-login-shell {
+    background: #f8fafc;
+}
+
+.afe-login-intro {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(145deg, #eff6ff 0%, #f8fafc 68%);
+}
+
+.afe-login-intro::before {
+    position: absolute;
+    width: 28rem;
+    height: 28rem;
+    right: -12rem;
+    bottom: -14rem;
+    border: 1px solid rgba(37, 99, 235, .12);
+    border-radius: 999px;
+    box-shadow: 0 0 0 2rem rgba(37, 99, 235, .035), 0 0 0 5rem rgba(37, 99, 235, .025);
+    content: '';
+}
+
+.afe-login-illustration {
+    position: relative;
+    z-index: 1;
+    width: 18rem;
+    height: 7rem;
+    margin-left: 4rem;
+    opacity: .8;
+}
+
+.afe-login-illustration-unit {
+    position: absolute;
+    top: .5rem;
+    left: 1rem;
+    width: 11rem;
+    height: 4.5rem;
+    border: 3px solid #2563eb;
+    border-radius: .6rem;
+    background: #fff;
+    box-shadow: .7rem .7rem 0 #dbeafe;
+}
+
+.afe-login-illustration-unit span {
+    display: block;
+    width: 4.5rem;
+    height: .35rem;
+    margin: 1.25rem auto 0;
+    border-radius: 999px;
+    background: #93c5fd;
+}
+
+.afe-login-illustration-unit i {
+    display: inline-block;
+    width: .45rem;
+    height: .45rem;
+    margin: 1.1rem .25rem 0;
+    border-radius: 999px;
+    background: #2563eb;
+}
+
+.afe-login-illustration-unit i:first-of-type {
+    margin-left: 3.7rem;
+}
+
+.afe-login-illustration-air {
+    position: absolute;
+    right: 0;
+    width: 4rem;
+    height: 1.2rem;
+    border-bottom: 2px solid #60a5fa;
+    border-radius: 50%;
+    transform: rotate(-10deg);
+}
+
+.afe-login-illustration-air-one {
+    top: 2rem;
+}
+
+.afe-login-illustration-air-two {
+    top: 4rem;
+    right: 1.2rem;
+}
+
+.afe-login-spinner {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+    border: 2px solid rgba(255, 255, 255, .45);
+    border-top-color: #fff;
+    border-radius: 999px;
+    animation: afe-login-spin .7s linear infinite;
+}
+
+@keyframes afe-login-spin {
+    to { transform: rotate(360deg); }
+}
+
+.afe-map {
+    min-height: 22rem;
+    border: 0;
+    filter: saturate(.8) contrast(1.05);
+}
+
+[data-app-loading] {
+    cursor: wait;
+    opacity: .7;
+    pointer-events: none;
+}
+
+.afe-click-feedback {
+    transform: translateY(1px);
+    opacity: .75;
+}
+
+@media (max-width: 640px) {
+    .afe-map {
+        min-height: 18rem;
+    }
+}
