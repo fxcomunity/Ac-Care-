@@ -7,7 +7,7 @@
  * File ini menghubungkan aplikasi ke database Neon PostgreSQL.
  * 
  * CARA KERJA:
- * 1. Membaca DATABASE_URL dari file .env
+ * 1. Membaca DATABASE_URL dari environment atau file .env lokal
  * 2. Memecah URL menjadi bagian-bagian (host, user, password, database)
  * 3. Membuat koneksi menggunakan PDO (PHP Data Objects)
  * 
@@ -19,44 +19,26 @@
  */
 
 // ============================================
-// LANGKAH 1: Membaca file .env
+// LANGKAH 1: Muat file .env lokal jika tersedia.
 // ============================================
-// __DIR__ artinya "folder tempat file ini berada" (yaitu folder config/)
-// '..' artinya "naik satu folder ke atas" (yaitu folder ac-care/)
-// Jadi kita mencari file .env di folder ac-care/
-
 $envFile = __DIR__ . '/../.env';
 
-// Cek apakah file .env ada
-if (!file_exists($envFile)) {
-    die('Error: File .env tidak ditemukan. Buat file .env di direktori root.');
-}
+if (is_file($envFile)) {
+    $envLines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-// Baca file .env baris per baris
-$envLines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($envLines as $line) {
+        if (str_starts_with(trim($line), '#') || !str_contains($line, '=')) {
+            continue;
+        }
 
-foreach ($envLines as $line) {
-    // Lewati baris yang dimulai dengan # (itu komentar)
-    if (str_starts_with(trim($line), '#')) {
-        continue;
-    }
-    
-    // Cari tanda = untuk memisahkan nama dan nilai
-    // Contoh: DATABASE_URL="postgresql://..." 
-    //   -> nama: DATABASE_URL
-    //   -> nilai: postgresql://...
-    if (str_contains($line, '=')) {
-        $parts = explode('=', $line, 2); // Pecah jadi 2 bagian saja
-        $name = trim($parts[0]);
-        $value = trim($parts[1]);
-        
-        // Hapus tanda kutip di awal dan akhir jika ada
-        $value = trim($value, '"\'');
-        
-        // Simpan sebagai environment variable
-        // putenv() membuat variabel bisa diakses oleh getenv()
-        putenv("$name=$value");
-        $_ENV[$name] = $value;
+        [$name, $value] = explode('=', $line, 2);
+        $name = trim($name);
+        $value = trim(trim($value), '"\'');
+
+        if ($name !== '') {
+            putenv("$name=$value");
+            $_ENV[$name] = $value;
+        }
     }
 }
 
@@ -66,7 +48,7 @@ foreach ($envLines as $line) {
 $databaseUrl = getenv('DATABASE_URL');
 
 if (!$databaseUrl) {
-    die('Error: DATABASE_URL tidak ditemukan di file .env.');
+    die('Error: DATABASE_URL tidak ditemukan di environment atau file .env.');
 }
 
 // ============================================

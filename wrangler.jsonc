@@ -1,0 +1,30 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "ac-care",
+	"main": "cloudflare/src/index.js",
+	"compatibility_date": "2026-11-07",
+	"containers": [
+		{
+			"class_name": "AcCareContainer",
+			"image": "./Dockerfile",
+			"max_instances": 1
+		}
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "AC_CARE_CONTAINER",
+				"class_name": "AcCareContainer"
+			}
+		]
+	},
+	"exports": {
+		"AcCareContainer": {
+			"type": "durable-object",
+			"storage": "sqlite"
+		}
+	},
+	"observability": {
+		"enabled": true
+	}
+}

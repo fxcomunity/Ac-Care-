@@ -2,3 +2,5 @@
 .env
 .venv/
 vendor/
+node_modules/
+.wrangler/

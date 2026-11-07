@@ -11,19 +11,35 @@ function baseUrl(string $path = ''): string
 {
     static $base = null;
     if ($base === null) {
-        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-        $dir = str_replace('\\', '/', dirname($scriptName));
-        
-        // Cari posisi root project Developer
-        if (preg_match('#^(/[^/]+)#', $dir, $matches)) {
-            $base = rtrim($matches[1], '/');
+        $configuredBase = envValue('APP_BASE_PATH');
+        if ($configuredBase !== '') {
+            $base = '/' . trim($configuredBase, '/');
+            if ($base === '/') {
+                $base = '';
+            }
         } else {
-            $base = '/Developer';
+            $projectRoot = realpath(dirname(__DIR__));
+            $documentRoot = realpath($_SERVER['DOCUMENT_ROOT'] ?? '');
+
+            if ($projectRoot !== false && $documentRoot !== false) {
+                $projectRoot = str_replace('\\', '/', $projectRoot);
+                $documentRoot = rtrim(str_replace('\\', '/', $documentRoot), '/');
+
+                if ($projectRoot === $documentRoot) {
+                    $base = '';
+                } elseif (str_starts_with($projectRoot, $documentRoot . '/')) {
+                    $base = '/' . substr($projectRoot, strlen($documentRoot) + 1);
+                } else {
+                    $base = '';
+                }
+            } else {
+                $base = '';
+            }
         }
     }
     
     $cleanPath = ltrim($path, '/');
-    return $cleanPath ? $base . '/' . $cleanPath : $base;
+    return $cleanPath ? $base . '/' . $cleanPath : ($base !== '' ? $base : '/');
 }
 
 function startSecureSession(): void
