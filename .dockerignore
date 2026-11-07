@@ -1,5 +1,0 @@
-.env
-.git/
-.wrangler/
-node_modules/
-vendor/

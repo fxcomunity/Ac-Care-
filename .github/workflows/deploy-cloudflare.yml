@@ -22,13 +22,28 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Deploy Worker and Container
+      - name: Prepare static assets
+        run: npm run build
+
+      - name: Configure Hyperdrive binding
+        env:
+          HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
+        run: |
+          if [ -z "$HYPERDRIVE_ID" ]; then
+            echo "::error::Set the HYPERDRIVE_ID repository variable to the Hyperdrive ID created in Cloudflare."
+            exit 1
+          fi
+          node -e "const fs=require('fs'); const p='wrangler.jsonc'; fs.writeFileSync(p, fs.readFileSync(p,'utf8').replace('SET_HYPERDRIVE_ID_IN_GITHUB_ACTIONS', process.env.HYPERDRIVE_ID));"
+
+      - name: Deploy Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
-          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "::error::Set the CLOUDFLARE_API_TOKEN repository secret and CLOUDFLARE_ACCOUNT_ID repository variable."
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ] || [ -z "$SESSION_SECRET" ]; then
+            echo "::error::Set CLOUDFLARE_API_TOKEN and SESSION_SECRET secrets, and the CLOUDFLARE_ACCOUNT_ID repository variable."
             exit 1
           fi
           npx wrangler deploy
+          printf %s "$SESSION_SECRET" | npx wrangler secret put SESSION_SECRET

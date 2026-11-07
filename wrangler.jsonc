@@ -3,26 +3,17 @@
 	"name": "ac-care",
 	"main": "cloudflare/src/index.js",
 	"compatibility_date": "2026-11-07",
-	"containers": [
+	"compatibility_flags": ["nodejs_compat"],
+	"hyperdrive": [
 		{
-			"class_name": "AcCareContainer",
-			"image": "./Dockerfile",
-			"max_instances": 1
+			"binding": "HYPERDRIVE",
+			"id": "SET_HYPERDRIVE_ID_IN_GITHUB_ACTIONS"
 		}
 	],
-	"durable_objects": {
-		"bindings": [
-			{
-				"name": "AC_CARE_CONTAINER",
-				"class_name": "AcCareContainer"
-			}
-		]
-	},
-	"exports": {
-		"AcCareContainer": {
-			"type": "durable-object",
-			"storage": "sqlite"
-		}
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS",
+		"run_worker_first": true
 	},
 	"observability": {
 		"enabled": true
