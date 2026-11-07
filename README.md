@@ -1,6 +1,6 @@
 # AC Care
 
-AC Care is deployed as a Cloudflare Worker. Its application backend is JavaScript and connects to the existing PostgreSQL database through Cloudflare Hyperdrive. The Worker does not run PHP or a container; the original PHP files remain in the repository as the legacy source and are not uploaded as runtime assets.
+AC Care is deployed as a Cloudflare Worker. Its application backend is JavaScript and connects directly to the existing Neon PostgreSQL database using Neon's serverless driver. The Worker does not use Hyperdrive, PHP, or a container; the original PHP files remain in the repository as the legacy source and are not uploaded as runtime assets.
 
 ## Features ported to Workers
 
@@ -14,8 +14,7 @@ The existing PostgreSQL tables are reused without a database-engine migration. E
 ## One-time setup
 
 1. In the PostgreSQL database, run [`database/schema.sql`](./database/schema.sql). Back up the database first if this is a production database; the schema also contains sample AC customer and service records.
-2. Create a Hyperdrive configuration for that PostgreSQL database in the Cloudflare dashboard. Copy its Hyperdrive ID. Hyperdrive supports Neon and is available on Cloudflare Workers Free and Paid plans.
-3. Ensure there is an owner account. If the database has no owner, install dependencies on a trusted computer and create one using environment variables. This connects directly to PostgreSQL; the script never reads `.env`:
+2. Ensure there is an owner account. If the database has no owner, install dependencies on a trusted computer and create one using environment variables. This connects directly to PostgreSQL; the script never reads `.env`:
 
    ```powershell
    $env:DATABASE_URL = Read-Host "PostgreSQL connection URL"
@@ -38,19 +37,19 @@ The **Deploy to Cloudflare** workflow builds the static asset directory and depl
 2. In GitHub, open **Settings → Secrets and variables → Actions** and add:
    - Secret `CLOUDFLARE_API_TOKEN`: the Cloudflare API token.
    - Secret `SESSION_SECRET`: a randomly generated secret with at least 32 characters.
+   - Secret `DATABASE_URL`: the Neon PostgreSQL connection string from the Neon Console. Keep it secret.
    - Variable `CLOUDFLARE_ACCOUNT_ID`: the account ID shown in Cloudflare.
-   - Variable `HYPERDRIVE_ID`: the Hyperdrive ID created above.
 3. Optionally configure `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, and `VAPID_SUBJECT` as Worker secrets in the Cloudflare dashboard (or with `npx wrangler secret put <NAME>`) to enable Web Push. Keep the private key secret.
 4. Open **Actions → Deploy to Cloudflare → Run workflow** and wait for a successful run.
 5. In Cloudflare, open **Workers & Pages → ac-care → Settings → Domains & Routes** to use the `workers.dev` address or connect a custom domain.
 
-The workflow only accepts a Hyperdrive ID, not a database URL. PostgreSQL credentials are stored in the Hyperdrive configuration in Cloudflare, not in GitHub or this repository.
+The deployment workflow sets the Neon connection string as the Worker `DATABASE_URL` secret. Do not put database credentials in the repository or paste them into chat.
 
 ## Local checks
 
 - `npm ci` installs Worker dependencies.
 - `npm run build` copies the existing CSS, JavaScript, and branding assets into the Worker static-assets directory.
 - `npm test` runs Worker helper tests.
-- `npx wrangler deploy --dry-run` validates the Worker bundle; a real deployment requires the Hyperdrive ID, Cloudflare account credentials, and Worker secrets above.
+- `npx wrangler deploy --dry-run` validates the Worker bundle; a real deployment requires Cloudflare account credentials and Worker secrets above.
 
 Website logos can be set using an HTTPS image URL. File uploads to the old PHP filesystem are not used by the Worker deployment.

@@ -1,11 +1,11 @@
-import { Client } from "pg";
+import { Client } from "@neondatabase/serverless";
 
 export async function withDatabase(env, callback) {
-	if (!env.HYPERDRIVE?.connectionString) {
-		throw new Error("Hyperdrive is not configured for this Worker.");
+	if (!env.DATABASE_URL) {
+		throw new Error("DATABASE_URL is not configured for this Worker.");
 	}
 
-	const client = new Client({ connectionString: env.HYPERDRIVE.connectionString });
+	const client = new Client(env.DATABASE_URL);
 	await client.connect();
 	try {
 		return await callback(client);
